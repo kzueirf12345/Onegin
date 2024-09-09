@@ -30,11 +30,11 @@ RELEASE_FLAGS = -DNDEBUG
 FLAGS += $(if $(DEBUG_),$(DEBUG_FLAGS),$(RELEASE_FLAGS))
 
 
-DIRS = array sort utils
+DIRS = strings sort utils mstrcmp
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 
-SOURCES = main.c array/array.c
+SOURCES = main.c strings/strings.c mstrcmp/mstrcmp.c mstrcmp/test_mstrcmp.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
