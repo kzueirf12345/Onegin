@@ -34,7 +34,7 @@ DIRS = strings sort utils mstrcmp
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 
-SOURCES = main.c strings/strings.c mstrcmp/mstrcmp.c mstrcmp/test_mstrcmp.c
+SOURCES = main.c strings/strings.c mstrcmp/mstrcmp.c mstrcmp/test_mstrcmp.c sort/sort.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
