@@ -2,8 +2,10 @@
 #include <string.h>
 
 #include "strings/strings.h"
+#include "mstrcmp/mstrcmp.h"
 #include "mstrcmp/test_mstrcmp.h"
 #include "sort/sort.h"
+#include "output/output.h"
 
 int main(const int argc, const char* argv[])
 {
@@ -15,9 +17,10 @@ int main(const int argc, const char* argv[])
     FILE* input = fopen("./Onegin.txt", "rb");
     if (!input)
     {
-        fprintf(stderr, "Can't open file\n");
+        fprintf(stderr, "Can't open input file\n");
         return -1;
     }
+
 
     char strings[MAX_STR_COUNT][MAX_STR_SIZE] = {};
 
@@ -27,10 +30,15 @@ int main(const int argc, const char* argv[])
         return -1;
     }
 
-    // for (size_t i = 0; i < MAX_STR_COUNT; ++i)
-    // {
-    //     fprintf(stderr, "/%s|\n", strings[i]);
-    // }
+    if (fclose(input))
+    {
+        fprintf(stderr, "Can't close input file\n");
+        return -1;
+    }
+
+
+    sort(strings, MAX_STR_COUNT, MAX_STR_SIZE, mstrcmp);
+
 
     if (argc > 1 && !strcmp(argv[1], "--test"))
     {
@@ -41,10 +49,25 @@ int main(const int argc, const char* argv[])
         }
     }
 
-    if (fclose(input))
+
+    FILE* output = fopen("./Onegin_sort.txt", "wb");
+    if (!output)
     {
-        fprintf(stderr, "Can't close file\n");
+        fprintf(stderr, "Can't open output file\n");
         return -1;
     }
+
+    if (output_strings(output, strings) != ERROR_CODE_SUCCES)
+    {
+        fprintf(stderr, "Can't output strings\n");
+        return -1;
+    }
+
+    if (fclose(output))
+    {
+        fprintf(stderr, "Can't close output file\n");
+        return -1;
+    }
+
     return 0;
 }

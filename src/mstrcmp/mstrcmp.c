@@ -5,8 +5,8 @@
 #include "mstrcmp.h"
 
 
-enum MstrcmpResult mstrcmp(const char* const first_str, const char* const second_str, 
-                           bool is_test_mod)
+int mstrcmp(const char* const first_str, const char* const second_str, 
+                           const bool is_test_mod)
 {
     assert(first_str);
     assert(second_str);
@@ -29,14 +29,10 @@ enum MstrcmpResult mstrcmp(const char* const first_str, const char* const second
         }
         
         if (first_str[first_index] != second_str[second_index])
-            return first_str[first_index] < second_str[second_index]
-                   ? MSTRCMP_RESULT_LESS
-                   : MSTRCMP_RESULT_GREAT;
+            return first_str[first_index] < second_str[second_index] ? -1 : 1;
     }
 
     return first_index == second_index
-           ? MSTRCMP_RESULT_EQUAL
-           : (first_str[first_index] == '\0'
-             ? MSTRCMP_RESULT_LESS
-             : MSTRCMP_RESULT_GREAT);
+           ? 0
+           : (first_str[first_index] == '\0' ? -1 : 1);
 }
