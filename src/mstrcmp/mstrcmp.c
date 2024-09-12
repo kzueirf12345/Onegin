@@ -8,8 +8,7 @@
 static void skip_nalnum(const char** const first_ptr_ptr, const char** const second_ptr_ptr);
 
 
-int strcmp_alnum(const char* const first_str, const char* const second_str, 
-                           const bool is_test_mod)
+int strcmp_alnum(const char* const first_str, const char* const second_str)
 {
     assert(first_str);
     assert(second_str);
@@ -18,13 +17,7 @@ int strcmp_alnum(const char* const first_str, const char* const second_str,
     const char* second_ptr = second_str;
     for (; *first_ptr != '\0' && *second_ptr != '\0'; ++first_ptr, ++second_ptr)
     {
-        if (!is_test_mod)
-        {
-            skip_nalnum(&first_ptr, &second_ptr);
-
-            if (*first_ptr == '\0' || *second_ptr == '\0')
-                break;
-        }
+        skip_nalnum(&first_ptr, &second_ptr);
         
         if (*first_ptr != *second_ptr)
             return *first_ptr < *second_ptr ? -1 : 1;
@@ -36,21 +29,11 @@ int strcmp_alnum(const char* const first_str, const char* const second_str,
 }
 
 
-#ifdef TEST_MODE
-
-int strcmp_alnum_wrapper(const void* const first_str, const void* const second_str, const bool is_test_mod)
-{
-    return strcmp_alnum(first_str, second_str, is_test_mod);
-}
-
-#else /*TEST_MODE*/
 
 int strcmp_alnum_wrapper(const void* const first_str, const void* const second_str)
 {
-    return strcmp_alnum(first_str, second_str, false);
+    return strcmp_alnum(first_str, second_str);
 }
-
-#endif /*TEST_MODE*/
 
 
 static void skip_nalnum(const char** const first_ptr_ptr, const char** const second_ptr_ptr) 
