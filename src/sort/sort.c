@@ -1,12 +1,15 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
+#include <memory.h>
+#include <stdio.h>
 
 #include "sort.h"
 
 
-void swap(void* const elem1, void* const elem2, const size_t elem_size);
+void swap(void* elem1, void* elem2, size_t elem_size);
 
+// static int num1 = 0;
 
 void sort(void *base, size_t num, size_t size,
           int (*compare) (const void* const, const void* const, const bool))
@@ -18,10 +21,16 @@ void sort(void *base, size_t num, size_t size,
     {
         for (size_t str_ind = 1; str_ind < nsort_size; ++str_ind)
         {
-            if (compare((void*)((char*)base + (str_ind - 1) * size), (void*)((char*)base + (str_ind) * size),
+                // num1++;
+                // fprintf(stderr, "%d. elem1 = %s, elem2 = %s\n", num1, 
+                //                 (const char*)((char*)base + (str_ind - 1) * size),
+                //                 (const char*)(((char*)base + (str_ind) * size)));
+            if (compare(((char*)base + (str_ind - 1) * size),
+                        ((char*)base + (str_ind) * size),
                         false) > 0)
             {
-                swap((void*)((char*)base + (str_ind - 1) * size), (void*)((char*)base + (str_ind) * size),
+                swap(((char*)base + (str_ind - 1) * size),
+                     ((char*)base + (str_ind) * size),
                      size);
             }
         }
@@ -29,34 +38,58 @@ void sort(void *base, size_t num, size_t size,
 }
 
 
-#define SWAP_HELP(ELEM1, ELEM2, TYPE, OFFSET)                              \
-    do {                                                                   \
-        TYPE temp = *(TYPE*)((char*)ELEM1 + OFFSET);                       \
-        *(TYPE*)((char*)ELEM1 + OFFSET) = *(TYPE*)((char*)ELEM2 + OFFSET); \
-        *(TYPE*)((char*)ELEM2 + OFFSET) = temp;                            \
-        OFFSET += sizeof(TYPE);                                            \
-    } while(0)
+//TODO - memcpy
 
-void swap(void* const elem1, void* const elem2, const size_t elem_size) 
+void swap(void* elem1, void* elem2, size_t elem_size) 
 {
     assert(elem1);
     assert(elem2);
 
 
-    size_t swapped_size = 0;
+    //TODO - func for memcpy and >>
+    while (elem_size >= 8)
+    {
+        uint64_t temp = 0;
+        memcpy(&temp, elem1, 8);
+               memcpy(elem1, elem2, 8);
+                      memcpy(elem2, &temp, 8);
+        elem1 = (char*)elem1 + 8;
+        elem2 = (char*)elem2 + 8;
+        elem_size -= 8;
+    }
 
-    while(swapped_size + 8 <= elem_size)
-        SWAP_HELP(elem1, elem2, int64_t, swapped_size);
+    if (elem_size >= 4)
+    {
+        uint32_t* temp = (uint32_t*)elem1;
+        memcpy(&temp, elem1, 4);
+               memcpy(elem1, elem2, 4);
+                      memcpy(elem2, &temp, 4);
+        elem1 = (char*)elem1 + 4;
+        elem2 = (char*)elem2 + 4;
+        elem_size -= 4;
+    }
 
+    if (elem_size >= 2)
+    {
+        uint16_t* temp = (uint16_t*)elem1;
+        memcpy(&temp, elem1, 2);
+               memcpy(elem1, elem2, 2);
+                      memcpy(elem2, &temp, 2);
+        elem1 = (char*)elem1 + 2;
+        elem2 = (char*)elem2 + 2;
+        elem_size -= 2;
+    }
 
-    if (swapped_size + 4 <= elem_size)
-        SWAP_HELP(elem1, elem2, int32_t, swapped_size);
-
-    if (swapped_size + 2 <= elem_size)
-        SWAP_HELP(elem1, elem2, int16_t, swapped_size);
-
-    if (swapped_size + 1 <= elem_size)
-        SWAP_HELP(elem1, elem2, int8_t, swapped_size);
+    if (elem_size >= 1)
+    {
+        uint8_t* temp = (uint8_t*)elem1;
+        memcpy(&temp, elem1, 1);
+               memcpy(elem1, elem2, 1);
+                      memcpy(elem2, &temp, 1);
+        elem1 = (char*)elem1 + 1;
+        elem2 = (char*)elem2 + 1;
+        elem_size -= 1;
+    }
 }
 
 #undef SWAP_HELP

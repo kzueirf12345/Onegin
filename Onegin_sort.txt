@@ -16,10 +16,6 @@
 
 
 
-
-
-
-
      Bez predislovij, sej zhe chas
      Bez prinuzhden'ya v razgovore
      CHego zh vam bol'she? Svet reshil,
@@ -54,6 +50,7 @@ IV
      Kogda zhe chert voz'met tebya!"
      Kogda zhe yunosti myatezhnoj
      Kosnut'sya do vsego slegka,
+     Latyn' iz mody vyshla nyne:
      Legko mazurku tanceval
      Letya v pyli na pochtovyh,
      Mog iz"yasnyat'sya i pisal;
@@ -71,6 +68,7 @@ IV
      Onegin, dobryj moj priyatel',
      On po-francuzski sovershenno
      On uvazhat' sebya zastavil
+     On znal dovol'no po-latyni,
      Ostrizhen po poslednej mode;
      Pechal'no podnosit' lekarstvo,
      Poluzhivogo zabavlyat',
@@ -89,12 +87,14 @@ IV
      Sud'ba Evgeniya hranila:
      (Sudej reshitel'nyh i strogih),
      Tak dumal molodoj povesa,
+     Tak, esli pravdu vam skazat',
      Tak vospitan'em, slava bogu,
      Tam nekogda gulyal i ya:
      Uchenyj malyj, no pedant5.
      Uchil ego vsemu shutya,
      U nas nemudreno blesnut'.
 V
+VI
      Vot moj Onegin na svobode;
      Vsevyshnej voleyu Zevesa
      Vzdyhat' i dumat' pro sebya:

@@ -30,6 +30,7 @@ int main(const int argc, const char* argv[])
         return -1;
     }
 
+
     if (fclose(input))
     {
         fprintf(stderr, "Can't close input file\n");
@@ -37,14 +38,15 @@ int main(const int argc, const char* argv[])
     }
 
 
-    sort(strings, MAX_STR_COUNT, MAX_STR_SIZE, mstrcmp);
+    sort(strings, MAX_STR_COUNT, MAX_STR_SIZE,
+         (int(*)(const void* const, const void* const, const bool))strcmp_alnum); // TODO - wrapper
 
 
-    if (argc > 1 && !strcmp(argv[1], "--test"))
+    if (argc > 1 && !strcmp(argv[1], "--test")) //TODO - preprocessing
     {
         if (test_mstrcmp(strings) != ERROR_CODE_SUCCES)
         {
-            fprintf(stderr, "Can't test mstrcmp\n");
+            fprintf(stderr, "Can't test strcmp_alnum\n");
             return -1;
         }
     }
@@ -57,12 +59,14 @@ int main(const int argc, const char* argv[])
         return -1;
     }
 
+
     if (output_strings(output, strings) != ERROR_CODE_SUCCES)
     {
         fprintf(stderr, "Can't output strings\n");
         return -1;
     }
-
+    
+    
     if (fclose(output))
     {
         fprintf(stderr, "Can't close output file\n");

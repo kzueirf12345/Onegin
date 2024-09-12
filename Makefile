@@ -21,12 +21,13 @@ FLAGS = -ggdb3 -O0 -Wall -Wextra -Waggressive-loop-optimizations \
 		-Wstack-protector -fcheck-new -fstack-protector -fstrict-overflow \
 		-flto-odr-type-merging -fno-omit-frame-pointer -Wlarger-than=81920 -Wstack-usage=81920 -pie \
 		-fPIE -Werror=vla \
-		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
+
+SANITIZER = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
 		integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 		shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 DEBUG_FLAGS = -D _DEBUG
-RELEASE_FLAGS = -DNDEBUG
+RELEASE_FLAGS = -DNDEBUG $(SANITIZER)
 FLAGS += $(if $(DEBUG_),$(DEBUG_FLAGS),$(RELEASE_FLAGS))
 
 

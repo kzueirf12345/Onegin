@@ -10,7 +10,7 @@
 //     MSTRCMP_RESULT_GREAT = 1
 // };
 
-int mstrcmp(const char* const first_str, const char* const second_str, 
+int strcmp_alnum(const char* const first_str, const char* const second_str, 
                            const bool is_test_mod);
 
 #endif /*SRC_MSTRCMP_H*/

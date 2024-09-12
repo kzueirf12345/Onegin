@@ -5,34 +5,42 @@
 #include "mstrcmp.h"
 
 
-int mstrcmp(const char* const first_str, const char* const second_str, 
+static void skip_nalnum(const char** const first_ptr_ptr, const char** const second_ptr_ptr);
+
+
+int strcmp_alnum(const char* const first_str, const char* const second_str, 
                            const bool is_test_mod)
 {
     assert(first_str);
     assert(second_str);
 
-    size_t first_index = 0;
-    size_t second_index = 0;
-    for (; first_str[first_index] != '\0' && second_str[second_index] != '\0';
-         ++first_index, ++second_index)
+    const char* first_ptr = first_str;
+    const char* second_ptr = second_str;
+    for (; *first_ptr != '\0' && *second_ptr != '\0'; ++first_ptr, ++second_ptr)
     {
         if (!is_test_mod)
         {
-            while (first_str[first_index] != '\0' && !isalnum(first_str[first_index]))
-                ++first_index;
+            skip_nalnum(&first_ptr, &second_ptr);
 
-            while (second_str[second_index] != '\0' && !isalnum(second_str[second_index]))
-                ++second_index;
-
-            if (first_str[first_index] == '\0' || second_str[second_index] == '\0')
+            if (*first_ptr == '\0' || *second_ptr == '\0')
                 break;
         }
         
-        if (first_str[first_index] != second_str[second_index])
-            return first_str[first_index] < second_str[second_index] ? -1 : 1;
+        if (*first_ptr != *second_ptr)
+            return *first_ptr < *second_ptr ? -1 : 1;
     }
 
-    return first_index == second_index
-           ? 0
-           : (first_str[first_index] == '\0' ? -1 : 1);
+    if (*first_ptr == *second_ptr) return  0;
+    if (*first_ptr == '\0')        return -1;
+    else                           return  1;
+}
+
+
+static void skip_nalnum(const char** const first_ptr_ptr, const char** const second_ptr_ptr) 
+{
+    while (**first_ptr_ptr != '\0' && !isalnum(**first_ptr_ptr))
+        ++*first_ptr_ptr;
+
+    while (**second_ptr_ptr != '\0' && !isalnum(**second_ptr_ptr))
+        ++*second_ptr_ptr;
 }

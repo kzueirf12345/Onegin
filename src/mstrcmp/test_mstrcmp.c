@@ -33,9 +33,9 @@ enum ErrorCode test_mstrcmp(const char strings[MAX_STR_COUNT][MAX_STR_SIZE])
                 return ERROR_CODE_FAILURE;
             }
 
-            int result_strcmp = strcmp(strings[first_index], strings[second_index]);
-            int result_mstrcmp = (int)mstrcmp(strings[first_index], strings[second_index], true);
-            int sign_strcmp = sign(result_strcmp);
+            int result_strcmp  =  strcmp(strings[first_index], strings[second_index]);
+            int result_mstrcmp = strcmp_alnum(strings[first_index], strings[second_index], true);
+            int sign_strcmp  = sign(result_strcmp);
             int sign_mstrcmp = sign(result_mstrcmp);
 
             const char* const answer = (sign_strcmp == sign_mstrcmp 
@@ -51,7 +51,7 @@ enum ErrorCode test_mstrcmp(const char strings[MAX_STR_COUNT][MAX_STR_SIZE])
             if (!strcmp(answer, RED_TEXT("INCORRECT")))
             {
                 if (printf("strcmp answer:  %d\n"
-                           "mstrcmp answer: %d\n"
+                           "strcmp_alnum answer: %d\n"
                            "first string:  /%s\\\n"
                            "second string: /%s\\\n",
                            sign_strcmp, sign_mstrcmp,
@@ -71,5 +71,7 @@ enum ErrorCode test_mstrcmp(const char strings[MAX_STR_COUNT][MAX_STR_SIZE])
 
 int sign(const int num)
 {
-    return num == 0 ? num : num / abs(num);
+    if (num == 0) return  0;
+    if (num < 0)  return -1;
+    else          return  1; 
 }
