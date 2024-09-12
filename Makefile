@@ -26,16 +26,16 @@ SANITIZER = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,fl
 		integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 		shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
-DEBUG_FLAGS = -D _DEBUG
+DEBUG_FLAGS = -D _DEBUG $(SANITIZER)
 RELEASE_FLAGS = -DNDEBUG $(SANITIZER)
 FLAGS += $(if $(DEBUG_),$(DEBUG_FLAGS),$(RELEASE_FLAGS))
 
 
-DIRS = strings sort utils mstrcmp output
+DIRS = text sort utils mstrcmp output
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 
-SOURCES = main.c strings/strings.c mstrcmp/mstrcmp.c sort/sort.c output/output.c
+SOURCES = main.c text/text.c mstrcmp/mstrcmp.c sort/sort.c output/output.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
