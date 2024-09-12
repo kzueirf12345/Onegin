@@ -36,6 +36,23 @@ int strcmp_alnum(const char* const first_str, const char* const second_str,
 }
 
 
+#ifdef TEST_MODE
+
+int strcmp_alnum_wrapper(const void* const first_str, const void* const second_str, const bool is_test_mod)
+{
+    return strcmp_alnum(first_str, second_str, is_test_mod);
+}
+
+#else /*TEST_MODE*/
+
+int strcmp_alnum_wrapper(const void* const first_str, const void* const second_str)
+{
+    return strcmp_alnum(first_str, second_str, false);
+}
+
+#endif /*TEST_MODE*/
+
+
 static void skip_nalnum(const char** const first_ptr_ptr, const char** const second_ptr_ptr) 
 {
     while (**first_ptr_ptr != '\0' && !isalnum(**first_ptr_ptr))
