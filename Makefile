@@ -31,11 +31,11 @@ RELEASE_FLAGS = -DNDEBUG -O2 $(SANITIZER)
 FLAGS += $(if $(DEBUG_),$(DEBUG_FLAGS),$(RELEASE_FLAGS))
 
 
-DIRS = text utils mstrcmp output sort
+DIRS = text utils mstrcmp output sort sort/swap
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 
-SOURCES = main.c text/text.c mstrcmp/mstrcmp.c output/output.c sort/sort.c
+SOURCES = main.c text/text.c mstrcmp/mstrcmp.c output/output.c sort/sort.c sort/swap/swap.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
