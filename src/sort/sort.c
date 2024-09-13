@@ -6,12 +6,10 @@
 
 #include "sort.h"
 
-
 void swap(void* elem1, void* elem2, size_t elem_size);
 
 
-
-void sort(void *base, size_t num, size_t size, int (*compare) (const void* const, const void* const))
+void sort(void* base, size_t num, size_t size, int (*compare) (const void*, const void*))
 {
     assert(base);
     assert(compare);
@@ -20,17 +18,16 @@ void sort(void *base, size_t num, size_t size, int (*compare) (const void* const
     {
         for (size_t str_ind = 1; str_ind < nsort_size; ++str_ind)
         {
-            if (compare(((char*)base + (str_ind - 1) * size),
-                        ((char*)base + (str_ind) * size)) > 0)
+            if (compare(*(char**)((char*)base + (str_ind - 1) * size),
+                        *(char**)((char*)base + (str_ind    ) * size)) > 0)
             {
                 swap(((char*)base + (str_ind - 1) * size),
-                     ((char*)base + (str_ind) * size),
+                     ((char*)base + (str_ind    ) * size),
                      size);
             }
         }
     }
 }
-
 
 
 void swap_help(void** const elem1, void** const elem2, void* const temp, const size_t swapped_size);

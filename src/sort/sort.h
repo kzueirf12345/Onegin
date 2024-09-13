@@ -3,10 +3,9 @@
 
 #include <stdbool.h>
 
-#include "../utils/utils.h"
 
 
-void sort(void *base, size_t num, size_t size, int (*compare) (const void* const, const void* const));
+void sort(void *base, size_t num, size_t size, int (*compare) (const void*, const void*));
 
 
 #endif /*SRC_SORT_H*/

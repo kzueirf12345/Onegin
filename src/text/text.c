@@ -27,7 +27,7 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
 
     if ((input_file_handle = open(input_filename, O_RDONLY)) < 0)
     {
-        perror("Can't open input file\n");
+        perror("Can't open input file");
         return ERROR_CODE_FAILURE;
     }
 
@@ -35,12 +35,11 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
 
     if ((input_handle = open(input_filename, O_RDONLY | O_BINARY)) < 0)
     {
-        perror("Can't open input file\n");
+        perror("Can't open input file");
         return ERROR_CODE_FAILURE;
     }
 
 #endif /*__linux__*/
-
 
     const enum ErrorCode fill_text_size_code = fill_text_size(text, input_filename);
     if (fill_text_size_code != ERROR_CODE_SUCCES)
@@ -52,6 +51,12 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
     if (fill_text_data_code != ERROR_CODE_SUCCES)
     {
         return fill_text_data_code;
+    }
+
+    if (close(input_file_handle))
+    {
+        perror("Can't close input file");
+        return ERROR_CODE_FAILURE;
     }
 
     const enum ErrorCode fill_text_string_count_code = fill_text_string_count(text);
@@ -78,7 +83,7 @@ static enum ErrorCode fill_text_size(Text* const text, const char* const filenam
     struct stat stat_data = {};
     if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode))
     {
-        perror("Can't handle stat\n");
+        perror("Can't handle stat");
         return ERROR_CODE_FAILURE;
     }
 
@@ -99,13 +104,13 @@ enum ErrorCode fill_text_data(Text* const text, const int file_handle)
     text->data = (char*)calloc(text->size, sizeof(*text->data));
     if (!text->data)
     {
-        perror("Can't calloc memory for text->data\n");
+        perror("Can't calloc memory for text->data");
         return ERROR_CODE_FAILURE;
     }
 
     if (read(file_handle, text->data, text->size) != (ssize_t)(text->size - 1))
     {
-        perror("Can't read into input file\n");
+        perror("Can't read into input file");
         return ERROR_CODE_FAILURE;
     }
 
@@ -145,7 +150,7 @@ static enum ErrorCode fill_text_string_ptrs(Text* const text)
     text->string_ptrs = (char**)calloc(text->string_count, sizeof(*text->string_ptrs));
     if (!text->string_ptrs)
     {
-        perror("Can't calloc memory for string_ptrs\n");
+        perror("Can't calloc memory for string_ptrs");
         return ERROR_CODE_FAILURE;
     }
 

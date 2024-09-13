@@ -8,7 +8,7 @@ COMPILER = gcc
 
 DEBUG_ = 1
 
-FLAGS = -ggdb3 -O0 -Wall -Wextra -Waggressive-loop-optimizations \
+FLAGS =	-Wall -Wextra -Waggressive-loop-optimizations \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
 		-Wconversion -Wempty-body -Wfloat-equal \
 		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op \
@@ -26,16 +26,16 @@ SANITIZER = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,fl
 		integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 		shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
-DEBUG_FLAGS = -D _DEBUG $(SANITIZER)
-RELEASE_FLAGS = -DNDEBUG $(SANITIZER)
+DEBUG_FLAGS = -D _DEBUG  -ggdb -Og -g3 -D_FORTIFY_SOURCES=3 $(SANITIZER)
+RELEASE_FLAGS = -DNDEBUG -O2 $(SANITIZER)
 FLAGS += $(if $(DEBUG_),$(DEBUG_FLAGS),$(RELEASE_FLAGS))
 
 
-DIRS = text sort utils mstrcmp output
+DIRS = text utils mstrcmp output sort
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 
-SOURCES = main.c text/text.c mstrcmp/mstrcmp.c sort/sort.c output/output.c
+SOURCES = main.c text/text.c mstrcmp/mstrcmp.c output/output.c sort/sort.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
