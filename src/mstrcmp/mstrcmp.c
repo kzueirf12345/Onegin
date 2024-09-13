@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "mstrcmp.h"
 
@@ -12,6 +13,8 @@ int strcmp_alnum(const char* first_str, const char* second_str)
 {
     assert(first_str);
     assert(second_str);
+
+    // fprintf(stderr, "first: %s\nsecond: %s \n\n", first_str, second_str);
 
     for (; *first_str != '\0' && *second_str != '\0'; ++first_str, ++second_str)
     {
