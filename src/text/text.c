@@ -21,25 +21,22 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
     assert(text);
 
 
-    int input_file_handle = 0;
 
 #ifdef __linux__
 
-    if ((input_file_handle = open(input_filename, O_RDONLY)) < 0)
-    {
-        perror("Can't open input file");
-        return ERROR_CODE_FAILURE;
-    }
+    int input_file_handle = open(input_filename, O_RDONLY);
 
 #else /*__linux__*/
 
-    if ((input_handle = open(input_filename, O_RDONLY | O_BINARY)) < 0)
+    int input_file_handle = open(input_filename, O_RDONLY | O_BINARY);
+
+#endif /*__linux__*/
+
+    if (input_file_handle < 0)
     {
         perror("Can't open input file");
         return ERROR_CODE_FAILURE;
     }
-
-#endif /*__linux__*/
 
     const enum ErrorCode fill_text_size_code = fill_text_size(text, input_filename);
     if (fill_text_size_code != ERROR_CODE_SUCCES)
@@ -58,6 +55,7 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
         perror("Can't close input file");
         return ERROR_CODE_FAILURE;
     }
+    input_file_handle = 0;
 
     const enum ErrorCode fill_text_string_count_code = fill_text_string_count(text);
     if (fill_text_string_count_code != ERROR_CODE_SUCCES)

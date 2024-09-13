@@ -2,19 +2,40 @@
 
 #include "output.h"
 
-enum ErrorCode output_strings(FILE* file, char strings[MAX_STR_COUNT][MAX_STR_SIZE])
+enum ErrorCode output_string_ptrs(const char* const output_filename, char* const * const strings, 
+                                  const size_t strings_size)
 {
-    assert(file);
+    assert(output_filename);
     assert(strings);
+    assert(strings_size);
 
-    for (size_t string_ind = 0; string_ind < MAX_STR_COUNT; ++string_ind)
+    FILE* output_file = fopen(output_filename, "ab");
+    if (!output_file)
     {
-        if (fputs(strings[string_ind], file) <= 0)
+        perror("Can't open output file");
+        return -1;
+    }
+
+    for (size_t ind = 0; ind < strings_size; ++ind)
+    {
+        if (fputs(strings[ind], output_file) < 0)
         {
-            perror("Can't print string\n");
+            perror("Can't puts strings into output file");
+            return ERROR_CODE_FAILURE;
+        }
+        if (fputs("\n", output_file) < 0)
+        {
+            perror("Can't puts '\\n' into output file");
             return ERROR_CODE_FAILURE;
         }
     }
+
+    if (fclose(output_file))
+    {
+        perror("Can't close output file");
+        return ERROR_CODE_FAILURE;
+    }
+    output_file = NULL;
 
     return ERROR_CODE_SUCCES;
 }
