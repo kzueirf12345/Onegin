@@ -17,7 +17,14 @@ int main()
         return -1;
     }
 
+    // NOTE - start-end sort
+
     sort(text.string_ptrs, text.string_count, sizeof(*text.string_ptrs), strcmp_alnum_wrapper);
+
+    if (is_sorted(text.string_ptrs, text.string_count, sizeof(*text.string_ptrs), strcmp_alnum_wrapper))
+        printf("SORTED IS " GREEN_TEXT("CORRECT")   "!\n");
+    else
+        printf("SORTED IS " RED_TEXT  ("INCORRECT") "!\n");
 
     if (output_string_ptrs("./Onegin_sort.txt", text.string_ptrs, text.string_count) 
         != ERROR_CODE_SUCCES)
@@ -26,17 +33,30 @@ int main()
         return -1;
     }
 
+    // NOTE - end-start sort
+
+    sort(text.string_ptrs, text.string_count, sizeof(*text.string_ptrs), rstrcmp_alnum_wrapper);
+
+    if (is_sorted(text.string_ptrs, text.string_count, sizeof(*text.string_ptrs), rstrcmp_alnum_wrapper))
+        printf("SORTED IS " GREEN_TEXT("CORRECT")   "!\n");
+    else
+        printf("SORTED IS " RED_TEXT  ("INCORRECT") "!\n");
+
+    if (output_string_ptrs("./Onegin_sort.txt", text.string_ptrs, text.string_count) 
+        != ERROR_CODE_SUCCES)
+    {
+        fprintf(stderr, "Can't output string_ptrs\n");
+        return -1;
+    }
+
+    // NOTE - not sort
+
     if (output_strings("./Onegin_sort.txt", text.data, text.size) 
         != ERROR_CODE_SUCCES)
     {
         fprintf(stderr, "Can't output strings\n");
         return -1;
     }
-
-    if (is_sorted(text.string_ptrs, text.string_count, sizeof(*text.string_ptrs), strcmp_alnum_wrapper))
-        printf("SORTED IS " GREEN_TEXT("CORRECT")   "!\n");
-    else
-        printf("SORTED IS " RED_TEXT  ("INCORRECT") "!\n");
 
 
     destroy_text(&text);

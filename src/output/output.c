@@ -11,7 +11,7 @@ enum ErrorCode output_string_ptrs(const char* const output_filename, char* const
     assert(strings);
     assert(strings_size);
 
-    FILE* output_file = fopen(output_filename, "wb");
+    FILE* output_file = fopen(output_filename, "ab");
     if (!output_file)
     {
         perror("Can't open output file");
