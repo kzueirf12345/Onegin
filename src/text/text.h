@@ -5,6 +5,7 @@
 
 #include "../utils/utils.h"
 
+
 typedef struct Text
 {
     char * data;
@@ -13,7 +14,9 @@ typedef struct Text
     char ** string_ptrs;
 } Text;
 
+
 enum ErrorCode fill_text(const char* const input_filename, Text* const text);
 void destroy_text(Text* text);
+
 
 #endif /*SRC_INPUT_H*/

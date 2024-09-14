@@ -9,10 +9,11 @@
 
 #include "text.h"
 
-static enum ErrorCode fill_text_size         (Text* const text, const char* const filename);
-static enum ErrorCode fill_text_data         (Text* const text, const int file_handle);
-static enum ErrorCode fill_text_string_count (Text* const text);
-static enum ErrorCode fill_text_string_ptrs  (Text* const text);
+
+static enum ErrorCode fill_text_size                   (Text* const text, const char* const filename);
+static enum ErrorCode fill_text_data                   (Text* const text, const int file_handle);
+static enum ErrorCode fill_text_string_count_and_split (Text* const text);
+static enum ErrorCode fill_text_string_ptrs            (Text* const text);
 
 
 enum ErrorCode fill_text(const char* const input_filename, Text* const text)
@@ -21,15 +22,10 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
     assert(text);
 
 
-
 #ifdef __linux__
-
     int input_file_handle = open(input_filename, O_RDONLY);
-
 #else /*__linux__*/
-
     int input_file_handle = open(input_filename, O_RDONLY | O_BINARY);
-
 #endif /*__linux__*/
 
     if (input_file_handle < 0)
@@ -40,15 +36,12 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
 
     const enum ErrorCode fill_text_size_code = fill_text_size(text, input_filename);
     if (fill_text_size_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_size_code;
-    }
 
     const enum ErrorCode fill_text_data_code = fill_text_data(text, input_file_handle);
     if (fill_text_data_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_data_code;
-    }
+
 
     if (close(input_file_handle))
     {
@@ -57,18 +50,14 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
     }
     input_file_handle = 0;
 
-    const enum ErrorCode fill_text_string_count_code = fill_text_string_count(text);
+
+    const enum ErrorCode fill_text_string_count_code = fill_text_string_count_and_split(text);
     if (fill_text_string_count_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_string_count_code;
-    }
-    // fprintf(stderr, "string_count: %zu\n", text->string_count);
 
     const enum ErrorCode fill_text_string_ptrs_code = fill_text_string_ptrs(text);
     if (fill_text_string_ptrs_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_string_ptrs_code;
-    }
 
     return ERROR_CODE_SUCCES;
 }
@@ -79,16 +68,12 @@ static enum ErrorCode fill_text_size(Text* const text, const char* const filenam
     assert(filename);
 
     struct stat stat_data = {};
-    if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode))
+    if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode) || stat_data.st_size < 0)
     {
         perror("Can't handle stat");
         return ERROR_CODE_FAILURE;
     }
 
-    if (stat_data.st_size < 0)
-    {
-        return ERROR_CODE_FAILURE;
-    }
     text->size = (size_t)(stat_data.st_size + 1);
 
     return ERROR_CODE_SUCCES;
@@ -112,12 +97,12 @@ enum ErrorCode fill_text_data(Text* const text, const int file_handle)
         return ERROR_CODE_FAILURE;
     }
 
-    text->data[text->size-1] = '\0';
+    text->data[text->size - 1] = '\0';
 
     return ERROR_CODE_SUCCES;
 }
 
-static enum ErrorCode fill_text_string_count (Text* const text)
+static enum ErrorCode fill_text_string_count_and_split (Text* const text)
 {
     assert(text);
     assert(text->size);
@@ -129,7 +114,7 @@ static enum ErrorCode fill_text_string_count (Text* const text)
     {
         if (text->data[ind] == '\n')
         {
-            text->data[ind] = '\0'; // REVIEW - Как сделать лучше? Просто тут неявно
+            text->data[ind] = '\0';
             ++text->string_count;
         }
     }
@@ -163,13 +148,13 @@ static enum ErrorCode fill_text_string_ptrs(Text* const text)
         char* const string_ptr = text->data + string_ind;
         assert(string_ptr);
 
-        // fprintf(stderr, "string_ptr p - %p  data - %s\n", string_ptr, string_ptr);
         if (*(string_ptr - 1) == '\0')
         {
-            // fprintf(stderr, "%s\n", string_ptr);
             *string_ptr_ptr = string_ptr;
             assert(*string_ptr_ptr);
+            
             string_ptr_ptr++;
+            assert(string_ptr_ptr);
         }
     }
 
@@ -182,14 +167,9 @@ void destroy_text(Text* text)
 {
     assert(text);
 
-    if (text->data)
-    {
-        free(text->data); text->data = NULL;
-    }
-    if (text->string_ptrs)
-    {
-        free(text->string_ptrs); text->string_ptrs = NULL;
-    }
-    text->size = 0;
+    if (text->data)       { free(text->data);        text->data        = NULL;}
+    if (text->string_ptrs){ free(text->string_ptrs); text->string_ptrs = NULL;}
+
+    text->size         = 0;
     text->string_count = 0;
 }
