@@ -98,3 +98,15 @@ static void partition(void* left, void* right, void** const partition_element, s
         assert(right);
     }
 }
+
+
+
+bool is_sorted(void* base, size_t num, size_t size, int (*compare) (const void*, const void*))
+{
+    for (size_t i = 1; i < num; ++i)
+    {
+        if (compare(*(void**)((char*)base + (i - 1) * size), *(void**)((char*)base + (i) * size)) > 0)
+            return false;
+    }
+    return true;
+}
