@@ -36,15 +36,11 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
 
     const enum ErrorCode fill_text_size_code = fill_text_size(text, input_filename);
     if (fill_text_size_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_size_code;
-    }
 
     const enum ErrorCode fill_text_data_code = fill_text_data(text, input_file_handle);
     if (fill_text_data_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_data_code;
-    }
 
 
     if (close(input_file_handle))
@@ -57,15 +53,11 @@ enum ErrorCode fill_text(const char* const input_filename, Text* const text)
 
     const enum ErrorCode fill_text_string_count_code = fill_text_string_count_and_split(text);
     if (fill_text_string_count_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_string_count_code;
-    }
 
     const enum ErrorCode fill_text_string_ptrs_code = fill_text_string_ptrs(text);
     if (fill_text_string_ptrs_code != ERROR_CODE_SUCCES)
-    {
         return fill_text_string_ptrs_code;
-    }
 
     return ERROR_CODE_SUCCES;
 }
@@ -76,16 +68,12 @@ static enum ErrorCode fill_text_size(Text* const text, const char* const filenam
     assert(filename);
 
     struct stat stat_data = {};
-    if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode))
+    if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode) || stat_data.st_size < 0)
     {
         perror("Can't handle stat");
         return ERROR_CODE_FAILURE;
     }
 
-    if (stat_data.st_size < 0)
-    {
-        return ERROR_CODE_FAILURE;
-    }
     text->size = (size_t)(stat_data.st_size + 1);
 
     return ERROR_CODE_SUCCES;
@@ -126,7 +114,7 @@ static enum ErrorCode fill_text_string_count_and_split (Text* const text)
     {
         if (text->data[ind] == '\n')
         {
-            text->data[ind] = '\0'; // REVIEW - Как сделать лучше? Просто тут неявно
+            text->data[ind] = '\0';
             ++text->string_count;
         }
     }
@@ -179,14 +167,9 @@ void destroy_text(Text* text)
 {
     assert(text);
 
-    if (text->data)
-    {
-        free(text->data); text->data = NULL;
-    }
-    if (text->string_ptrs)
-    {
-        free(text->string_ptrs); text->string_ptrs = NULL;
-    }
-    text->size = 0;
+    if (text->data)       { free(text->data);        text->data        = NULL;}
+    if (text->string_ptrs){ free(text->string_ptrs); text->string_ptrs = NULL;}
+
+    text->size         = 0;
     text->string_count = 0;
 }
