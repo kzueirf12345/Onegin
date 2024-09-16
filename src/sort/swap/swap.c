@@ -3,7 +3,9 @@
 
 #include "swap.h"
 
-static void swap_help(void** const elem1, void** const elem2, void* const temp, const size_t swapped_size);
+
+static void memcpy_for_swap(void** const elem1, void** const elem2, void* const temp,
+                            const size_t swapped_size);
 
 
 void swap(void* elem1, void* elem2, size_t elem_size) 
@@ -12,43 +14,36 @@ void swap(void* elem1, void* elem2, size_t elem_size)
     assert(elem2);
     assert(elem_size);
 
-    size_t swapped_size = 8;
-
-    while (elem_size >= swapped_size)
+    while (elem_size >= sizeof(uint64_t))
     {
         uint64_t temp = 0;
-        swap_help(&elem1, &elem2, &temp, swapped_size);
-        elem_size -= swapped_size;
+        memcpy_for_swap(&elem1, &elem2, &temp, sizeof(uint64_t));
+        elem_size -= sizeof(uint64_t);
     }
-    swapped_size >>= 1;
 
 
-    if (elem_size >= swapped_size)
+    if (elem_size & sizeof(uint32_t))
     {
-        uint32_t* temp = 0;
-        swap_help(&elem1, &elem2, &temp, swapped_size);
-        elem_size -= swapped_size;
+        uint32_t temp = 0;
+        memcpy_for_swap(&elem1, &elem2, &temp, sizeof(uint32_t));
     }
-    swapped_size >>= 1;
 
-    if (elem_size >= swapped_size)
+    if (elem_size & sizeof(uint16_t))
     {
-        uint16_t* temp = 0;
-        swap_help(&elem1, &elem2, &temp, swapped_size);
-        elem_size -= swapped_size;
+        uint16_t temp = 0;
+        memcpy_for_swap(&elem1, &elem2, &temp, sizeof(uint16_t));
     }
-    swapped_size >>= 1;
 
-    if (elem_size >= swapped_size)
+    if (elem_size & sizeof(uint8_t))
     {
-        uint8_t* temp = 0;
-        swap_help(&elem1, &elem2, &temp, swapped_size);
-        elem_size -= swapped_size;
+        uint8_t temp = 0;
+        memcpy_for_swap(&elem1, &elem2, &temp, sizeof(uint8_t));
     }
 }
 
 
-static void swap_help(void** const elem1, void** const elem2, void* const temp, const size_t swapped_size)
+static void memcpy_for_swap(void** const elem1, void** const elem2, void* const temp,
+                            const size_t swapped_size)
 {
     assert(elem1);
     assert(elem2);

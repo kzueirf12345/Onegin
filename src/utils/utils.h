@@ -1,12 +1,13 @@
 #ifndef SRC_UTILS_H
 #define SRC_UTILS_H
 
-#include <stdlib.h>
+
+// #define TEST_MODE
 
 
 enum ErrorCode 
 {
-    ERROR_CODE_SUCCES  = 0,
+    ERROR_CODE_SUCCESS  = 0,
     ERROR_CODE_FAILURE = 1
 };
 

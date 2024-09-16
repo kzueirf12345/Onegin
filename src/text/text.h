@@ -8,14 +8,14 @@
 
 typedef struct Text
 {
-    char * data;
-    size_t size;
-    size_t string_count;
-    char ** string_ptrs;
+    char*  text;
+    size_t text_size;
+    size_t string_size;
+    char** strings;
 } Text;
 
 
-enum ErrorCode fill_text(const char* const input_filename, Text* const text);
+enum ErrorCode create_text(const char* const input_filename, Text* const text);
 void destroy_text(Text* text);
 
 

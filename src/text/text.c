@@ -1,164 +1,164 @@
 #include <assert.h>
 #include <stdio.h>
-#include <memory.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <stdlib.h>
 
 #include "text.h"
 
 
-static enum ErrorCode fill_text_size                   (Text* const text, const char* const filename);
-static enum ErrorCode fill_text_data                   (Text* const text, const int file_handle);
+static enum ErrorCode fill_text_size                   (Text* const text, FILE** const input_file);
+static enum ErrorCode fill_text_data                   (Text* const text, FILE** const input_file);
 static enum ErrorCode fill_text_string_count_and_split (Text* const text);
 static enum ErrorCode fill_text_string_ptrs            (Text* const text);
 
 
-enum ErrorCode fill_text(const char* const input_filename, Text* const text)
+enum ErrorCode create_text(const char* const input_filename, Text* const text)
 {
     assert(input_filename);
     assert(text);
 
-
-#ifdef __linux__
-    int input_file_handle = open(input_filename, O_RDONLY);
-#else /*__linux__*/
-    int input_file_handle = open(input_filename, O_RDONLY | O_BINARY);
-#endif /*__linux__*/
-
-    if (input_file_handle < 0)
+    FILE* input_file = fopen(input_filename, "rb");
+    if (!input_file)
     {
-        perror("Can't open input file");
+        perror("Can't fopen input file");
         return ERROR_CODE_FAILURE;
     }
-
-    const enum ErrorCode fill_text_size_code = fill_text_size(text, input_filename);
-    if (fill_text_size_code != ERROR_CODE_SUCCES)
-        return fill_text_size_code;
-
-    const enum ErrorCode fill_text_data_code = fill_text_data(text, input_file_handle);
-    if (fill_text_data_code != ERROR_CODE_SUCCES)
-        return fill_text_data_code;
+    setbuf(input_file, NULL);
 
 
-    if (close(input_file_handle))
+    const enum ErrorCode fill_text_size_errcode = fill_text_size(text, &input_file);
+    if (fill_text_size_errcode != ERROR_CODE_SUCCESS)
+        return fill_text_size_errcode;
+
+    const enum ErrorCode fill_text_data_errcode = fill_text_data(text, &input_file);
+    if (fill_text_data_errcode != ERROR_CODE_SUCCESS)
+        return fill_text_data_errcode;
+
+
+    if (fclose(input_file))
     {
-        perror("Can't close input file");
+        perror("Can't fclose input file");
         return ERROR_CODE_FAILURE;
     }
-    input_file_handle = 0;
+    input_file = NULL;
 
 
-    const enum ErrorCode fill_text_string_count_code = fill_text_string_count_and_split(text);
-    if (fill_text_string_count_code != ERROR_CODE_SUCCES)
-        return fill_text_string_count_code;
+    const enum ErrorCode fill_text_string_count_errcode = fill_text_string_count_and_split(text);
+    if (fill_text_string_count_errcode != ERROR_CODE_SUCCESS)
+        return fill_text_string_count_errcode;
 
-    const enum ErrorCode fill_text_string_ptrs_code = fill_text_string_ptrs(text);
-    if (fill_text_string_ptrs_code != ERROR_CODE_SUCCES)
-        return fill_text_string_ptrs_code;
+    const enum ErrorCode fill_text_string_ptrs_errcode = fill_text_string_ptrs(text);
+    if (fill_text_string_ptrs_errcode != ERROR_CODE_SUCCESS)
+        return fill_text_string_ptrs_errcode;
 
-    return ERROR_CODE_SUCCES;
+    return ERROR_CODE_SUCCESS;
 }
 
-static enum ErrorCode fill_text_size(Text* const text, const char* const filename) 
+static enum ErrorCode fill_text_size(Text* const text, FILE** const input_file) 
 {
     assert(text);
-    assert(filename);
+    assert(input_file);
+    assert(*input_file);
 
-    struct stat stat_data = {};
-    if (stat(filename, &stat_data) || !S_ISREG(stat_data.st_mode) || stat_data.st_size < 0)
+    if (fseek(*input_file, 0, SEEK_END))
     {
-        perror("Can't handle stat");
+        perror("Can't fseek to end input file");
         return ERROR_CODE_FAILURE;
     }
 
-    text->size = (size_t)(stat_data.st_size + 1);
+    long text_size = 0;
+    if ((text_size = ftell(*input_file)) < 0)
+    {
+        perror("Can't ftell input_file");
+        return ERROR_CODE_FAILURE;
+    }
+    text->text_size = (size_t)text_size + 1;
 
-    return ERROR_CODE_SUCCES;
+
+    if (fseek(*input_file, 0, SEEK_SET))
+    {
+        perror("Can't fseek to start input file");
+        return ERROR_CODE_FAILURE;
+    }
+
+    return ERROR_CODE_SUCCESS;
 }
 
-enum ErrorCode fill_text_data(Text* const text, const int file_handle)
+enum ErrorCode fill_text_data(Text* const text, FILE** const input_file)
 {
+    assert(input_file);
+    assert(*input_file);
     assert(text);
-    assert(text->size);
+    assert(text->text_size);
 
-    text->data = (char*)calloc(text->size, sizeof(*text->data));
-    if (!text->data)
+    text->text = (char*)calloc(text->text_size, sizeof(*text->text));
+    if (!text->text)
     {
-        perror("Can't calloc memory for text->data");
+        perror("Can't calloc memory for text->text");
         return ERROR_CODE_FAILURE;
     }
 
-    if (read(file_handle, text->data, text->size) != (ssize_t)(text->size - 1))
+    if (fread(text->text, 1, text->text_size - 1, *input_file) != (text->text_size - 1))
     {
-        perror("Can't read into input file");
+        perror("Can't fread into input file");
         return ERROR_CODE_FAILURE;
     }
 
-    text->data[text->size - 1] = '\0';
+    text->text[text->text_size - 1] = '\0';
 
-    return ERROR_CODE_SUCCES;
+    return ERROR_CODE_SUCCESS;
 }
 
 static enum ErrorCode fill_text_string_count_and_split (Text* const text)
 {
     assert(text);
-    assert(text->size);
-    assert(text->data);
+    assert(text->text_size);
+    assert(text->text);
 
-
-    text->string_count = 1;
-    for (size_t ind = 0; ind < text->size; ++ind)
+    text->string_size = 1;
+    for (size_t ind = 0; ind < text->text_size; ++ind)
     {
-        if (text->data[ind] == '\n')
+        if (text->text[ind] == '\n')
         {
-            text->data[ind] = '\0';
-            ++text->string_count;
+            text->text[ind] = '\0';
+            ++text->string_size;
         }
     }
 
-    return ERROR_CODE_SUCCES;
+    return ERROR_CODE_SUCCESS;
 }
 
 static enum ErrorCode fill_text_string_ptrs(Text* const text)
 {
     assert(text);
-    assert(text->size);
-    assert(text->data);
-    assert(text->string_count);
+    assert(text->text_size);
+    assert(text->text);
+    assert(text->string_size);
 
-
-    text->string_ptrs = (char**)calloc(text->string_count, sizeof(*text->string_ptrs));
-    if (!text->string_ptrs)
+    text->strings = (char**)calloc(text->string_size, sizeof(*text->strings));
+    if (!text->strings)
     {
-        perror("Can't calloc memory for string_ptrs");
+        perror("Can't calloc memory for strings");
         return ERROR_CODE_FAILURE;
     }
 
-    *text->string_ptrs = text->data;
-    assert(*text->string_ptrs);
+    *text->strings = text->text;
+    assert(*text->strings);
+    
 
-
-    char** string_ptr_ptr = text->string_ptrs + 1;
-    assert(string_ptr_ptr);
-    for (size_t string_ind = 1; string_ind < text->size; ++string_ind)
+    char** string_ptr = text->strings + 1;
+    for (size_t string_ind = 1; string_ind < text->text_size; ++string_ind)
     {
-        char* const string_ptr = text->data + string_ind;
-        assert(string_ptr);
+        char* const string = text->text + string_ind;
 
-        if (*(string_ptr - 1) == '\0')
+        assert(string - 1);
+        if  (*(string - 1) == '\0')
         {
-            *string_ptr_ptr = string_ptr;
-            assert(*string_ptr_ptr);
-            
-            string_ptr_ptr++;
-            assert(string_ptr_ptr);
+            *string_ptr = string;
+            ++string_ptr;
         }
     }
 
-    return ERROR_CODE_SUCCES;
+    return ERROR_CODE_SUCCESS;
 }
 
 
@@ -167,9 +167,9 @@ void destroy_text(Text* text)
 {
     assert(text);
 
-    if (text->data)       { free(text->data);        text->data        = NULL;}
-    if (text->string_ptrs){ free(text->string_ptrs); text->string_ptrs = NULL;}
+    free(text->text);        text->text        = NULL;
+    free(text->strings); text->strings = NULL;
 
-    text->size         = 0;
-    text->string_count = 0;
+    text->text_size         = 0;
+    text->string_size = 0;
 }
