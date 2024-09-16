@@ -66,7 +66,6 @@ static void partition(void* left, void* right, void** const partition_element, s
 
     const size_t pivot_offset = num >> 1;
     *partition_element = ((char*)left + pivot_offset * size);
-
     assert(*partition_element);
 
 
@@ -107,7 +106,7 @@ bool is_sorted(void* base, size_t num, size_t size, int (*compare) (const void*,
 
     for (size_t i = 1; i < num; ++i)
     {
-        if (compare(((char*)base + (i - 1) * size), ((char*)base + (i) * size)) > 0)
+        if (compare((char*)base + (i - 1) * size, (char*)base + (i) * size) > 0)
             return false;
     }
     return true;

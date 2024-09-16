@@ -12,7 +12,7 @@ enum ErrorCode output_strings(FILE** const output_file, char* const * const stri
     assert(strings);
     assert(strings_size);
 
-    if (fputs("==================STRING_PTRS OUTPUT====================\n\n", *output_file) < 0)
+    if (fputs("==================STRINGS OUTPUT====================\n\n", *output_file) < 0)
     {
         perror("Can't puts header into output file");
         return ERROR_CODE_FAILURE;

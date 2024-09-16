@@ -27,11 +27,17 @@ enum ErrorCode create_text(const char* const input_filename, Text* const text)
 
     const enum ErrorCode fill_text_size_errcode = fill_text_size(text, &input_file);
     if (fill_text_size_errcode != ERROR_CODE_SUCCESS)
+    {
+        fprintf(stderr, "Can't fill_text_size\n");
         return fill_text_size_errcode;
+    }
 
     const enum ErrorCode fill_text_data_errcode = fill_text_data(text, &input_file);
     if (fill_text_data_errcode != ERROR_CODE_SUCCESS)
+    {
+        fprintf(stderr, "Can't fill_text_data\n");
         return fill_text_data_errcode;
+    }
 
 
     if (fclose(input_file))
@@ -44,11 +50,17 @@ enum ErrorCode create_text(const char* const input_filename, Text* const text)
 
     const enum ErrorCode fill_text_string_count_errcode = fill_text_string_count_and_split(text);
     if (fill_text_string_count_errcode != ERROR_CODE_SUCCESS)
+    {
+        fprintf(stderr, "Can't fill_text_string_count_and_split\n");
         return fill_text_string_count_errcode;
+    }
 
     const enum ErrorCode fill_text_string_ptrs_errcode = fill_text_string_ptrs(text);
     if (fill_text_string_ptrs_errcode != ERROR_CODE_SUCCESS)
+    {
+        fprintf(stderr, "Can't fill_text_string_ptrs\n");
         return fill_text_string_ptrs_errcode;
+    }
 
     return ERROR_CODE_SUCCESS;
 }
@@ -167,9 +179,9 @@ void destroy_text(Text* text)
 {
     assert(text);
 
-    free(text->text);        text->text        = NULL;
+    free(text->text);    text->text    = NULL;
     free(text->strings); text->strings = NULL;
 
-    text->text_size         = 0;
+    text->text_size   = 0;
     text->string_size = 0;
 }
