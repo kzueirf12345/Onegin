@@ -51,7 +51,7 @@ int main()
 }
 
 
-enum ErrorCode output_two_sorts_and_default_text(FILE ** const output_file, Text* const text,
+enum ErrorCode output_two_sorts_and_default_text(FILE** const output_file, Text* const text,
                                                  int (*first_compare)  (const void*, const void*),
                                                  int (*second_compare) (const void*, const void*))
 {
@@ -71,7 +71,7 @@ enum ErrorCode output_two_sorts_and_default_text(FILE ** const output_file, Text
     }
 
 
-    sort(text->strings, text->string_size, sizeof(*text->strings), second_compare);
+    qsort(text->strings, text->string_size, sizeof(*text->strings), second_compare);
 
     #ifdef TEST_MODE
     if (is_sorted(text->strings, text->string_size, sizeof(*text->strings), second_compare))

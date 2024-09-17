@@ -1,13 +1,13 @@
-#include <stdlib.h>
-#include <stdint.h>
 #include <assert.h>
 #include <memory.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <sys/types.h>
 
 #include "sort.h"
 #include "swap/swap.h"
 #include "../output/output.h"
+
 
 //          rofls
 static void partition(void* left, void* right, void** const partition_element, size_t num,
